@@ -1,13 +1,15 @@
-import {describe,test, expect} from 'vitest'
-import {BancoMongoDB} from './banco-mongodb'
+import {describe,test, expect, beforeEach} from 'vitest'
+import BancoMongoDB from './banco-mongodb'
 
 describe('BancoMongoDB teste', () => {
+    const bancoMongoDB = new BancoMongoDB()
+    beforeEach(async () => {
+        await bancoMongoDB.filmeModelo.deleteMany({})
+    })
     test('BancoMongoDB', () => {
-        const bancoMongoDB = new BancoMongoDB()
         expect(bancoMongoDB).toBeDefined()
     })
     test('deve salvar um filme', async () => {
-        const bancoMongoDB = new BancoMongoDB()
         const filme = {
             id: 1,
             titulo: 'O Poderoso Chefão',
@@ -15,6 +17,6 @@ describe('BancoMongoDB teste', () => {
             imagem: 'fotofilme.jpg'
         }
         const result = await bancoMongoDB.salvar(filme)
-        expect(result).toBe(true)
+        expect(result).toEqual(filme)
     })
 })

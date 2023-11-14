@@ -1,4 +1,7 @@
 import express from 'express'
+import BancoMongoDB from './infra/banco/banco-mongodb'
+import ListaFilme from './aplicacao/lista-filme.use-case'
+
 const app = express()
 app.use(express.json())
 //Tenho que ter uma rota post para cadastrar um filme
@@ -11,6 +14,13 @@ type Filme = {
     imagem:string
 }
 let filmesCadastros:Filme[] = []
+
+app.get('/filmes',(req,res)=>{
+    const BancoMongoDB = new BancoMongoDB
+    const listarFilme = new ListaFilme(BancoMongoDB);
+    const filmes = listarFilme.executar();
+    res.send(filmes)
+})
 app.post('/filmes',(req,res)=>{
     const {id,titulo,descricao,imagem} = req.body
     const filme = {
@@ -22,9 +32,6 @@ app.post('/filmes',(req,res)=>{
     //Como eu salvo o filme que foi cadastrado no meu vetor de filmes (Banco de dados)
     filmesCadastros.push(filme)
     res.status(201).send(filme)
-})
-app.get('/filmes',(req,res)=>{
-    res.send("Filmes Listados com sucesso")
 })
 
 app.get('/filmes/:id',(req,res)=>{
