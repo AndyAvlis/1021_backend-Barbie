@@ -1,34 +1,28 @@
 import express from 'express'
-import BancoMongoDB from './infra/banco/banco-mongodb'
-import ListaFilme from './aplicacao/lista-filme.use-case'
-
 const app = express()
 app.use(express.json())
-//Tenho que ter uma rota post para cadastrar um filme
+import ListaFilme from './aplicacao/lista-filme.use-case'
+import BancoMongoDB from './infra/banco/banco-mongodb'
+import SalvaFilme from './aplicacao/salva-filme.use-case'
 
-//Salvar em algum lugar o filme que foi cadastrado.
-type Filme = {
-    id:number,
-    titulo:string,
-    descricao:string,
-    imagem:string
-}
-let filmesCadastros:Filme[] = []
-
-app.get('/filmes',(req,res)=>{
-    const BancoMongoDB = new BancoMongoDB
-    const listarFilme = new ListaFilme(BancoMongoDB);
-    const filmes = listarFilme.executar();
+const bancoMongoDB = new BancoMongoDB()
+app.get('/filmes',async (req,res)=>{
+    //usem o listarFilme Usecase para listar os filmes
+    const listaFilme = new ListaFilme(bancoMongoDB)
+    const filmes = await listaFilme.executar()
     res.send(filmes)
 })
-app.post('/filmes',(req,res)=>{
-    const {id,titulo,descricao,imagem} = req.body
-    const filme = {
-        id,
-        titulo,
-        descricao,
-        imagem
-    }
+app.post('/filmes', async (req,res)=>{
+    const bancoMongoDB = new BancoMongoDB
+    const salvarFilme = new SalvaFilme(bancoMongoDB)
+    const filme = await salvarFilme.execute(req.body)
+    // const {id,titulo,descricao,imagem} = req.body
+    // const filme = {
+    //     id,
+    //     titulo,
+    //     descricao,
+    //     imagem
+    // }
     //Como eu salvo o filme que foi cadastrado no meu vetor de filmes (Banco de dados)
     filmesCadastros.push(filme)
     res.status(201).send(filme)
@@ -46,3 +40,14 @@ app.get('/filmes/:id',(req,res)=>{
 app.listen(3000,()=>{
     console.log('Servidor rodando na porta 3000')
 })
+
+//Tenho que ter uma rota post para cadastrar um filme
+
+//Salvar em algum lugar o filme que foi cadastrado.
+type Filme = {
+    id:number,
+    titulo:string,
+    descricao:string,
+    imagem:string
+}
+let filmesCadastros:Filme[] = []

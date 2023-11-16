@@ -36,8 +36,8 @@ export default class BancoMongoDB implements  FilmeRepositorioInterface {
     return filmeSalvo
   }
   async listar(): Promise<Filme[]> {
-    const filmes = await this.filmeModelo.find()
-    return filmes.map((filme:any) => {
+    const listaFilme = await this.filmeModelo.find()
+    return listaFilme.map((filme:FilmeDTO) => {
       return {
         id: filme._id,
         titulo: filme.titulo,
@@ -58,3 +58,9 @@ type Filme = {
   descricao: string,
   imagem: string
 };
+type FilmeDTO = {
+  _id: number,
+  titulo: string,
+  descricao: string,
+  imagem: string
+}
