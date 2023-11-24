@@ -1,6 +1,8 @@
 import express from 'express'
 const app = express()
+import cors from 'cors'
 app.use(express.json())
+app.use(cors())
 import ListaFilme from './aplicacao/lista-filme.use-case'
 import BancoMongoDB from './infra/banco/banco-mongodb'
 import SalvaFilme from './aplicacao/salva-filme.use-case'
